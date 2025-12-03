@@ -171,11 +171,17 @@ if research_button and query:
                 )
 
             except Exception as e:
-                st.error(f"❌ Error during research: {e}")
-                with st.expander("📋 View Error Details"):
-                    import traceback
+                if "429" in str(e):
+                    st.warning(
+                        "⚠️ Rate limit exceeded. Please wait a minute and try again."
+                    )
+                else:
+                    st.error(f"❌ Error during research: {e}")
+                    with st.expander("📋 View Error Details"):
+                        import traceback
 
-                    st.code(traceback.format_exc())
+                        st.code(traceback.format_exc())
+                    
 
 if st.session_state.history:
     st.divider()
