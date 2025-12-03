@@ -1,0 +1,44 @@
+.main {
+    padding: 2rem;
+}
+
+.stButton>button {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    height: 3em;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.stButton>button:hover {
+    background-color: #45a049;
+}
+
+.research-box {
+    background-color: #001000;
+    padding: 25px;
+    border-radius: 10px;
+    margin: 20px 0;
+    border-left: 4px solid #4CAF50;
+}
+
+.history-item {
+    background-color: #001000;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+    border: 1px solid #e0e0e0;
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+}
+
+.subtitle {
+    text-align: center;
+    color: #7f8c8d;
+    margin-bottom: 2rem;
+}

@@ -11,7 +11,6 @@ def save_to_txt(data: str, filename: str = "research_output.txt") -> str:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         formatted_text = f"--- Research Output ---\nTimestamp: {timestamp}\n\n{data}\n\n{'=' * 50}\n\n"
 
-        # Create directory if it doesn't exist
         os.makedirs(
             os.path.dirname(filename) if os.path.dirname(filename) else ".",
             exist_ok=True,
@@ -25,7 +24,6 @@ def save_to_txt(data: str, filename: str = "research_output.txt") -> str:
         return f"✗ Error saving to file: {str(e)}"
 
 
-# Create save tool
 save_tool = Tool(
     name="save_text_to_file",
     func=save_to_txt,
@@ -33,20 +31,19 @@ save_tool = Tool(
 )
 
 
-# Create search tool with better error handling
 def safe_search(query: str) -> str:
     """Wrapper for DuckDuckGo search with error handling"""
     try:
         from duckduckgo_search import DDGS
 
-        # Use DDGS directly for more reliable results
+        # Use DDGS 
         with DDGS() as ddgs:
             results = list(ddgs.text(query, max_results=5))
 
             if not results:
                 return f"No search results found for: {query}"
 
-            # Format results nicely
+           
             formatted_results = []
             for i, result in enumerate(results, 1):
                 title = result.get("title", "No title")
@@ -63,7 +60,7 @@ def safe_search(query: str) -> str:
             )
             wiki_tool_backup = WikipediaQueryRun(api_wrapper=wiki_wrapper)
             return f"Web search failed, using Wikipedia instead:\n\n{wiki_tool_backup.run(query)}"
-        except:
+        except:  # noqa: E722
             return f"Search error: {str(e)}. Please try rephrasing your query or check your internet connection."
 
 
@@ -73,7 +70,7 @@ search_tool = Tool(
     description="Search the web for current information. Input should be a search query string. Use this for recent events, statistics, cities, countries, and up-to-date information.",
 )
 
-# Create Wikipedia tool with better configuration
+# Create Wikipedia tool
 api_wrapper = WikipediaAPIWrapper(
     top_k_results=3, doc_content_chars_max=2000, load_all_available_meta=False
 )
@@ -83,5 +80,5 @@ wiki_tool = WikipediaQueryRun(
     description="Search Wikipedia for encyclopedic information. Input should be a search query string. Use this for historical facts, scientific concepts, geography, and general knowledge about cities, countries, and places.",
 )
 
-# Export all tools as a list for easy import
+
 all_tools = [search_tool, wiki_tool, save_tool]

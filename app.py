@@ -6,10 +6,13 @@ from tools import search_tool, wiki_tool, save_tool
 from dotenv import load_dotenv
 import os
 from datetime import datetime
+from components.footer import footer
+from components.header import header
+from styles.styles import load_css
 
 load_dotenv()
 
-# Page configuration
+
 st.set_page_config(
     page_title="AI Research Assistant",
     page_icon="🔍",
@@ -17,61 +20,15 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# Custom CSS
-st.markdown(
-    """
-    <style>
-    .main {
-        padding: 2rem;
-    }
-    .stButton>button {
-        width: 100%;
-        background-color: #4CAF50;
-        color: white;
-        height: 3em;
-        border-radius: 10px;
-        font-weight: bold;
-        font-size: 16px;
-    }
-    .stButton>button:hover {
-        background-color: #45a049;
-    }
-    .research-box {
-        background-color: #001000;
-        padding: 25px;
-        border-radius: 10px;
-        margin: 20px 0;
-        border-left: 4px solid #4CAF50;
-    }
-    .history-item {
-        background-color:  #001000;
-        padding: 15px;
-        border-radius: 8px;
-        margin: 10px 0;
-        border: 1px solid #e0e0e0;
-    }
-    h1 {
-        text-align: center;
-        color: #2c3e50;
-    }
-    .subtitle {
-        text-align: center;
-        color: #7f8c8d;
-        margin-bottom: 2rem;
-    }
-    </style>
-""",
-    unsafe_allow_html=True,
-)
+load_css()
 
-# Initialize session state
+
 if "history" not in st.session_state:
     st.session_state.history = []
 if "agent_executor" not in st.session_state:
     st.session_state.agent_executor = None
 
 
-# Initialize agent
 @st.cache_resource
 def initialize_agent(
     api_key, model_name="gemini-2.5-flash", temperature=0.7, max_iterations=10
@@ -124,14 +81,9 @@ When you have gathered sufficient information, provide a comprehensive answer wi
         return None
 
 
-# Header
-st.title("AI Research Assistant")
-st.markdown(
-    '<p class="subtitle">Ask me anything and I\'ll research it for you using web search and Wikipedia!</p>',
-    unsafe_allow_html=True,
-)
+header()
 
-# API Key
+
 api_key = os.getenv("GOOGLE_API_KEY", "")
 
 if not api_key:
@@ -145,14 +97,15 @@ if not api_key:
         st.info("💡 Get your API key from: https://makersuite.google.com/app/apikey")
         st.stop()
 
-# Initialize agent
+
+
 if st.session_state.agent_executor is None:
     with st.spinner("Initializing AI Agent..."):
         st.session_state.agent_executor = initialize_agent(
             api_key, model_name="gemini-2.5-flash", temperature=0.7, max_iterations=10
         )
 
-# Query input
+
 query = st.text_area(
     "What would you like to research?",
     placeholder="e.g., What is the importance of Sri Lanka in global trade?",
@@ -160,7 +113,7 @@ query = st.text_area(
     key="query_input",
 )
 
-# Buttons
+
 col = st.columns([1])[0]
 with col:
     research_button = st.button(
@@ -168,30 +121,25 @@ with col:
     )
 
 
-# Research execution
 if research_button and query:
     if st.session_state.agent_executor is None:
         st.error("❌ Agent initialization failed. Please check your API key.")
     else:
         with st.spinner("🔍 Researching... This may take a moment..."):
             try:
-                # Run the agent
                 result = st.session_state.agent_executor.invoke({"input": query})
 
                 output_text = result.get("output", "No output generated")
 
-                # Display results
                 st.success("✅ Research Complete!")
 
                 st.markdown("### 📊 Research Results")
 
-                # Display the actual content
                 st.markdown(
                     f'<div class="research-box">{output_text}</div>',
                     unsafe_allow_html=True,
                 )
 
-                # Show intermediate steps in expander
                 if result.get("intermediate_steps"):
                     with st.expander("🔧 View Tool Calls & Process"):
                         for i, step in enumerate(result["intermediate_steps"], 1):
@@ -201,7 +149,6 @@ if research_button and query:
                             st.text(f"Output: {str(observation)[:300]}...")
                             st.divider()
 
-                # Save to history
                 st.session_state.history.append(
                     {
                         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -214,7 +161,7 @@ if research_button and query:
                     st.session_state["query_input"] = ""
                     st.session_state["clear_query"] = False
 
-                # Download button with actual content
+               
                 st.download_button(
                     label="💾 Download Results as TXT",
                     data=output_text,
@@ -233,7 +180,7 @@ if research_button and query:
 if st.session_state.history:
     st.divider()
 
-    # History header with clear button
+
     col1, col2 = st.columns([3, 1])
     with col1:
         st.subheader("📜 Research History")
@@ -252,7 +199,6 @@ if st.session_state.history:
             with st.expander("View Full Result"):
                 st.markdown(item["result"])
 
-                # Download individual result with actual content
                 st.download_button(
                     label="💾 Download This Result",
                     data=item["result"],
@@ -262,14 +208,5 @@ if st.session_state.history:
                 )
             st.markdown("</div>", unsafe_allow_html=True)
 
-# Footer
-st.divider()
-st.markdown(
-    """
-    <div style='text-align: center; color: gray; padding: 20px;'>
-        <p>🤖 Powered by Gemini AI | Built with ❤️ using Streamlit</p>
-        <p style='font-size: 12px;'>Tools: Web Search 🌐 | Wikipedia 📚 | File Save 💾</p>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+
+footer()
