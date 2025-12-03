@@ -25,7 +25,7 @@ pip install -r requirements.txt
 ## Run the System
 
 ```bash
-python main.py
+streamlit app.py
 ```
 
 
