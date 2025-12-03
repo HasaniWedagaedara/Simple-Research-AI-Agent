@@ -28,4 +28,6 @@ pip install -q -U google-genai
 
 ```bash
 python main.py
+```
+
 
