@@ -2,11 +2,7 @@
 
 ## Create a Python virtual environment
 
-#### install dependencies gloabally
 
-```bash
-pip install -r requirements.txt
-```
 #### Remove previous venv
 
 ```bash
@@ -18,11 +14,13 @@ rm -r venv
 ```bash
 python -m venv venv 
 source venv/Scripts/activate
-pip install -r requirements.txt
-pip install -q -U google-genai
 ```
 
+#### install dependencies gloabally
 
+```bash
+pip install -r requirements.txt
+```
 
 ## Run the System
 
